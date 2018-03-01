@@ -50,7 +50,7 @@ function start() {
                         type:"input",
                         message:"How many units of the product would you like to buy?",
                         validate:function(value){
-                            if(isNaN(value)=== false){
+                            if(isNaN(value)=== false &&parseInt(value)>0){
                                 return true;
                             }
                             else{
@@ -60,8 +60,8 @@ function start() {
                     }
 
                 ]).then(function(answer){
-
-                    console.log(answer.quantity);
+                    inventoryLeft(answer.productList, answer.quantity);
+                  
                 });
 
             });
@@ -69,6 +69,13 @@ function start() {
         }
 
     });
-    conn.end();
 };
 
+function inventoryLeft(id,quantity){
+    var num=parseInt(quantity);
+   conn.query("SELECT stock_quantity,price FROM products WHERE ?", {item_id:id}, function(err,res){
+
+        if(err) throw err;
+        
+    });
+};
