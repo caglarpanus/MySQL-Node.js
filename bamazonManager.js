@@ -127,6 +127,11 @@ function updateInventory(id,amount){
         if(err) throw err;
         if(res && res.length){
             var newInv = parseInt(res[0].stock_quantity) + num;
+            conn.query("UPDATE products SET ? WHERE ?",[{stock_quantity:newInv},{item_id:id}], function(err,res){
+                if(err) throw err;
+                console.log("Item ID " + id + " is now updated." + "The current quantity is now " + newInv);
+                manager();
+            })
         }
     })
 }
