@@ -2,7 +2,7 @@ require('dotenv').config();
 
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-
+var Table = require('cli-table');
 
 var conn = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -10,61 +10,65 @@ var conn = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_DATABASE
-});
-
-function validateInput(value){
-    var integar=Number.isInteger(parseFloat(value));
-    var sing = Math.sign(value);
-    if(integar && (sign === 1)){
-        return true
-    }
-    else{
-        return "Please enter a numerical value and a non-zero number!"
-    }
-};
-    
+});    
 
 conn.connect(function(err){
     if(err) throw err;
     console.log("Connected as ID " + conn.threadId);
-    start();
+    buyAndDisplay();
 });
+//We need to validate if the user is entering a valid value, if not we will send a error message.
 
-function start() {
-            
-    inquirer.prompt([
-        {
-            name:"productList",
-            type:"rawlist",
-            message:"Which ID of the product would like to buy?",
-            validate:validateInput(),
-            choices:function(){
-                var choicesArray=[];
-                console.log('Existing Inventory: ');
-                for(var i=0; i < res.length; i++){
-                    choicesArray.push(res[i].product_name + " | " + res[i].department_name + " | Price: " + res[i].price + " | Quantity: " + res[i].stock_quantity);
-                }
-                return choicesArray;
-            }
-        },
-        {
-            name:"quantity",
-                type:"input",
-                message:"How many units of the product would you like to buy?",
-                validate:validateInput()
-        }
 
-        ]).then(function(answer){
-            //var qty = answer.quantity;
-            console.log(answer.quantity, itemId);
-            console.log(price);
-            conn.query("UPDATE products SET ? WHERE ?",[{stock_quantity:answer.quantity},{item_id:itemId}], function(err,res){
-                //var price = 
-                if(err) throw err;
-                console.log(res);
-            
-            });
-            
+var buyAndDisplay = function(){
+    conn.query("SELECT * FROM products", function (err, res){
+        var table = new Table ({
+            head: ["item_id","product_name","department_name","price","stock_quantity"]
         });
+        console.log("HERE ARE ITEMS FOR SALE");
+        console.log("=======================");
+
+        for(var i=0; i < res.length; i++){
+            table.push([res[i].item_id, res[i].product_name, res[i].department_name, res[i].price, res[i].stock_quantity])
+        }
+        console.log(table.toString());
+        //inquirer.prompt so that we can ask questions to client and get an answer for each question.
+        inquirer.prompt([
+            {
+                name:"itemId",
+                type:"input",
+                message:"What is item ID you would like to purchase today?"
+                // validate:validation(),
+                
+            },
+            {
+                name:"quantity",
+                type:"input",
+                message:"How many of this item would you like to buy?"
+                // validate:validation()
+            }
             
-};
+        ]).then(function(answer){
+            var chosenQuantity = answer.quantity;
+            var chosenId = answer.itemId -1;
+            
+            if(chosenQuantity < res[chosenId].stock_quantity){
+                console.log("Your total for: " + "(" + chosenQuantity + ")" + res[chosenId].product_name + " is: "+ res[chosenId].price * chosenQuantity);
+                conn.query("UPDATE products SET ? WHERE ?",[{
+                    stock_quantity:res[chosenId].stock_quantity - chosenQuantity
+                },
+                {
+                    item_id:res[chosenId].item_id  
+                }],function(err,res){
+                    buyAndDisplay();
+                });
+            }
+            else{
+                console.log("Sorry, insufficient quanity at this time. We have only " + res[chosenId].StockQuantity + " in our Inventory.");
+                buyAndDisplay();
+            }
+        })
+    });//first query so that we can display our inventory.
+}; //buyAndDisplay function.A constracted function that runs the whole application.
+
+buyAndDisplay();
