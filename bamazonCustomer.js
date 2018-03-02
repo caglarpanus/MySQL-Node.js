@@ -15,7 +15,7 @@ var conn = mysql.createConnection({
 conn.connect(function(err){
     if(err) throw err;
     console.log("Connected as ID " + conn.threadId);
-    buyAndDisplay();
+   
 });
 //We need to validate if the user is entering a valid value, if not we will send a error message.
 
@@ -37,15 +37,14 @@ var buyAndDisplay = function(){
             {
                 name:"itemId",
                 type:"input",
-                message:"What is item ID you would like to purchase today?"
-                // validate:validation(),
+                message:"What is item ID you would like to purchase today?",
                 
             },
             {
                 name:"quantity",
                 type:"input",
-                message:"How many of this item would you like to buy?"
-                // validate:validation()
+                message:"How many of this item would you like to buy?",
+            
             }
             
         ]).then(function(answer){
