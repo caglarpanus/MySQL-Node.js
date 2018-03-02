@@ -38,13 +38,27 @@ var buyAndDisplay = function(){
                 name:"itemId",
                 type:"input",
                 message:"What is item ID you would like to purchase today?",
-                
+                validate: function(value){
+                    if(isNaN(value) == false){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
             },
             {
                 name:"quantity",
                 type:"input",
                 message:"How many of this item would you like to buy?",
-            
+                validate: function(value){
+                    if(isNaN(value) == false){
+                        return true;
+                    }
+                    else{
+                        return false;
+                    }
+                }
             }
             
         ]).then(function(answer){
