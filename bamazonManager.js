@@ -141,40 +141,41 @@ function addNewProduct(){
     inquirer.prompt([
         {
             name:"item",
-            type:"input",
             message:"Please enter the name of the product that you would like to add."
 
         },
         {
             name:"department",
-            type:"list",
             message:"Please choose the department you would like to add your product to."
         },
         {
             name:"price",
-            type:"input",
             message:"Please enter the price for this product."
         },
         {
             name:"stock",
-            type:"input",
             message:"Plese enter a quantity for this item to be entered into current Inventory"
         }
     ]).then(function(answer){
 
-        var item = {
-            product_name:answer.item,
-            department_name:answer.department,
-            price:answer.price,
-            stock_quantity:answer.stock
-        }
-        conn.query("INSTER INTO products SET ?", item, function(err,res){
-            if(err) throw err;
-            console.log(item.product_name + " has been added to your inventory succesfully!");
-            manager();
-        })
+        addProduct(answer.item,answer.department,answer.price,answer.stock)
     });
 
 };
+
+function addProduct(a,b,c,d){
+    var item = a.trim();
+    var department = b.trim();
+    var price = Number(c);
+    var stock = parseInt(d);
+
+    var queryString = "INSERT INTO products (product_name,department_name,price,stock_quantity) VALUES (?,?,?,?)"
+
+    conn.query(queryString,[item, department, price, stock], function(err,res){
+        if(err) throw err;
+        console.log(item + " now has been added to your inventory succesfully!");
+        manager();
+    })
+}
 
 manager();
