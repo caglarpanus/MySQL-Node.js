@@ -6,9 +6,11 @@ Bamazon uses these node modules, and all dependencies in the package.json, so ju
 
 *npm install*
 
-## A View From the Application
+## Two Views From the Application
 
-<img src="view.gif"></img>
+<img src="gifs/view.gif"></img>
+#### Adding a new product into our current inventory
+<img src="gifs/manager.gif"></img>
 
 ## Customer Module
 * The customer module lets users select a product to purchase, enter the number of items they wish to purchase, and then complete the purchase.
