@@ -137,14 +137,7 @@ function updateInventory(id,amount){
 }
 
 function addNewProduct(){
-    var departments= [];
-    conn.query('SELECT department_name FROM Departments', function(err, res) {
-        if (err) throw err;
-        for (var i = 0; i < res.length; i++) {
-            departments.push(res[i].department_name);
-        }
-    });
-
+   
     inquirer.prompt([
         {
             name:"item",
